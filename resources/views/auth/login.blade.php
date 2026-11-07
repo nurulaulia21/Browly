@@ -70,6 +70,9 @@
                             <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-600"></i>
                             <span>Kata Sandi</span>
                         </label>
+                        <a href="{{ route('password.request') }}" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:underline">
+                            Lupa password?
+                        </a>
                     </div>
                     <input id="password" name="password" type="password" autocomplete="current-password" required
                            placeholder="••••••••"

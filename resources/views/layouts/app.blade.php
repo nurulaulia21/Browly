@@ -22,6 +22,11 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
     </style>
+    <style>
+        /* Sembunyikan ikon mata/hapus bawaan browser (Edge) agar tidak dobel dengan tombol kita */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear { display: none; }
+    </style>
     @stack('styles')
 </head>
 <body class="flex flex-col min-h-screen text-slate-800 antialiased bg-slate-50/70">
@@ -79,24 +84,45 @@
                         </div>
                     </a>
 
+                    @php
+                        $activeMode = request()->routeIs('pemilik.*') ? 'pemilik'
+                            : (request()->routeIs('penyewa.*') ? 'penyewa' : (auth()->check() ? session('mode') : null));
+                    @endphp
+
                     <!-- Nav Links -->
                     <div class="hidden md:flex items-center gap-1.5">
+                        @auth
+                            <a href="{{ route('profile.show') }}" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('profile.*') ? 'text-emerald-700 bg-emerald-50/80 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                                Profil
+                            </a>
+                        @endauth
                         <a href="{{ route('home') }}" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('home') ? 'text-emerald-700 bg-emerald-50/80 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             Beranda
                         </a>
                         <a href="{{ route('barangs.index') }}" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('barangs.*') ? 'text-emerald-700 bg-emerald-50/80 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             Katalog Barang
                         </a>
+                        @auth
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('admin.dashboard') }}" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.*') ? 'text-emerald-700 bg-emerald-50/80 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                                    Dashboard
+                                </a>
+                            @elseif($activeMode === 'pemilik')
+                                <a href="{{ route('pemilik.dashboard') }}" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('pemilik.*') ? 'text-emerald-700 bg-emerald-50/80 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                                    Dashboard Pemilik
+                                </a>
+                            @elseif($activeMode === 'penyewa')
+                                <a href="{{ route('penyewa.dashboard') }}" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('penyewa.*') ? 'text-emerald-700 bg-emerald-50/80 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                                    Dashboard Penyewa
+                                </a>
+                            @endif
+                        @endauth
                     </div>
                 </div>
 
                 <!-- Right Side Actions & Profile -->
                 <div class="flex items-center gap-2.5">
                     @auth
-                        @php
-                            $activeMode = request()->routeIs('pemilik.*') ? 'pemilik'
-                                : (request()->routeIs('penyewa.*') ? 'penyewa' : session('mode'));
-                        @endphp
                         @if(auth()->user()->isPengguna() && $activeMode === 'pemilik')
                             <a href="{{ route('pemilik.barang.create') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-sm shadow-emerald-600/20 transition duration-150">
                                 <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
@@ -105,45 +131,32 @@
                         @endif
 
                         <div class="flex items-center gap-2 border-l border-slate-200 pl-3">
-                            @if(auth()->user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 flex items-center gap-1.5 transition">
-                                    <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-600"></i> Admin
+                            @if(auth()->user()->isPengguna())
+                                <a href="{{ route('mode.pilih') }}" title="Pilih / ganti mode Penyewa atau Pemilik"
+                                   class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-700 inline-flex items-center gap-1.5 transition whitespace-nowrap">
+                                    <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i>
+                                    <span>Pilih Mode</span>
                                 </a>
                             @endif
 
-                            @if(auth()->user()->isPengguna())
-                                @if($activeMode === 'pemilik')
-                                    <a href="{{ route('pemilik.dashboard') }}" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 flex items-center gap-1.5 transition">
-                                        <i data-lucide="store" class="w-3.5 h-3.5 text-indigo-600"></i> Dashboard Pemilik
-                                    </a>
-                                @elseif($activeMode === 'penyewa')
-                                    <a href="{{ route('penyewa.dashboard') }}" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 flex items-center gap-1.5 transition">
-                                        <i data-lucide="package" class="w-3.5 h-3.5 text-emerald-600"></i> Sewa Saya
-                                    </a>
-                                @endif
-
-                                @if($activeMode)
-                                    {{-- Tukar mode Penyewa <-> Pemilik --}}
-                                    <form action="{{ route('mode.set', $activeMode === 'pemilik' ? 'penyewa' : 'pemilik') }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" title="Ganti ke mode {{ $activeMode === 'pemilik' ? 'Penyewa' : 'Pemilik' }}"
-                                                class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-700 flex items-center gap-1.5 transition cursor-pointer">
-                                            <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i>
-                                            <span class="hidden sm:inline">Ganti ke {{ $activeMode === 'pemilik' ? 'Penyewa' : 'Pemilik' }}</span>
-                                        </button>
-                                    </form>
-                                @else
-                                    <a href="{{ route('mode.pilih') }}" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-700 flex items-center gap-1.5 transition">
-                                        <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i> Pilih Mode
-                                    </a>
-                                @endif
-                            @endif
-
                             <div class="relative ml-1 flex items-center gap-2 bg-slate-50 border border-slate-200/80 rounded-2xl py-1 px-2.5">
-                                <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 text-white font-bold flex items-center justify-center text-xs shadow-2xs">
-                                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                                </div>
-                                <span class="hidden lg:inline text-xs font-bold text-slate-800">{{ auth()->user()->name }}</span>
+                                <a href="{{ route('profile.show') }}" title="Profil saya" class="flex items-center gap-2 rounded-xl hover:opacity-80 transition">
+
+                                    @if(auth()->user()->avatar_url)
+
+                                        <img src="{{ auth()->user()->avatar_url }}" alt="Foto profil" class="w-7 h-7 rounded-full object-cover shadow-2xs {{ request()->routeIs('profile.*') ? 'ring-2 ring-emerald-300' : '' }}">
+
+                                    @else
+
+                                        <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 text-white font-bold flex items-center justify-center text-xs shadow-2xs {{ request()->routeIs('profile.*') ? 'ring-2 ring-emerald-300' : '' }}">
+
+                                            {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+
+                                        </div>
+
+                                    @endif
+                                    <span class="hidden lg:inline text-xs font-bold text-slate-800">{{ auth()->user()->name }}</span>
+                                </a>
                                 
                                 <form action="{{ route('logout') }}" method="POST" class="inline">
                                     @csrf
@@ -342,6 +355,37 @@
                 setTimeout(() => toast.remove(), 400);
             }, 200);
         }
+    </script>
+    <script>
+        // Tombol lihat / sembunyikan password untuk semua kolom password
+        document.addEventListener('DOMContentLoaded', function () {
+            var EYE = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+            var EYE_OFF = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c6.5 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3.5 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>';
+
+            document.querySelectorAll('input[type="password"]').forEach(function (input) {
+                var wrap = document.createElement('div');
+                wrap.style.position = 'relative';
+                input.parentNode.insertBefore(wrap, input);
+                wrap.appendChild(input);
+                input.style.paddingRight = '2.75rem';
+
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.setAttribute('aria-label', 'Tampilkan password');
+                btn.setAttribute('title', 'Tampilkan / sembunyikan password');
+                btn.style.cssText = 'position:absolute;top:0;bottom:0;right:0;padding:0 .8rem;display:flex;align-items:center;background:none;border:0;color:#94a3b8;cursor:pointer;';
+                btn.innerHTML = EYE;
+                btn.addEventListener('mouseenter', function () { btn.style.color = '#059669'; });
+                btn.addEventListener('mouseleave', function () { btn.style.color = '#94a3b8'; });
+                btn.addEventListener('click', function () {
+                    var show = input.type === 'password';
+                    input.type = show ? 'text' : 'password';
+                    btn.innerHTML = show ? EYE_OFF : EYE;
+                    btn.setAttribute('aria-label', show ? 'Sembunyikan password' : 'Tampilkan password');
+                });
+                wrap.appendChild(btn);
+            });
+        });
     </script>
     @stack('scripts')
 </body>

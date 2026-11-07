@@ -68,6 +68,16 @@ class User extends Authenticatable
         return $this->hasMany(Review::class, 'pemilik_id');
     }
 
+    /** URL foto profil (null jika belum ada). Disajikan lewat route, tanpa perlu storage:link. */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (! $this->avatar) {
+            return null;
+        }
+
+        return route('avatar.show', ['user' => $this->id, 'v' => $this->updated_at?->timestamp]);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

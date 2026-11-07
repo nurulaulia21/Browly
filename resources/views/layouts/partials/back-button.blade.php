@@ -11,6 +11,8 @@
     $map = [
         'barangs.index'     => [route('home'), 'Kembali', true],
         'login'             => [route('home'), 'Kembali ke Beranda', false],
+        'password.request'  => [route('login'), 'Kembali ke Login', false],
+        'password.reset'    => [route('login'), 'Kembali ke Login', false],
         'register'          => [route('home'), 'Kembali ke Beranda', false],
         'penyewa.dashboard' => [route('home'), 'Kembali ke Beranda', false],
         'pemilik.dashboard' => [route('home'), 'Kembali ke Beranda', false],

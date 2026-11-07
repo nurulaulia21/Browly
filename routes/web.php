@@ -9,8 +9,10 @@ use App\Http\Controllers\DashboardPemilikController;
 use App\Http\Controllers\DashboardPenyewaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ModeController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PengembalianController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 // Halaman Publik
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/avatar/{user}', [ProfileController::class, 'avatar'])->name('avatar.show');
 Route::get('/barangs', [BarangController::class, 'index'])->name('barangs.index');
 Route::get('/barangs/{slug}', [BarangController::class, 'show'])->name('barangs.show');
 Route::post('/barangs/{barang}/check-availability', [BarangController::class, 'checkAvailability'])->name('barangs.check-availability');
@@ -32,6 +35,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+
+    // Lupa password
+    Route::get('/lupa-password', [PasswordResetController::class, 'showForgot'])->name('password.request');
+    Route::post('/lupa-password', [PasswordResetController::class, 'verify'])->middleware('throttle:6,1')->name('password.verify');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'update'])->middleware('throttle:6,1')->name('password.update');
 });
 
 Route::get('/quick-login/{role}', [AuthController::class, 'quickLogin'])->name('quick-login');
@@ -39,6 +48,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 // Rute Pengguna Terautentikasi (Auth)
 Route::middleware('auth')->group(function () {
+    // Profil akun & ubah password
+    Route::get('/profil', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profil/foto', [ProfileController::class, 'uploadPhoto'])->name('profile.photo');
+    Route::delete('/profil/foto', [ProfileController::class, 'deletePhoto'])->name('profile.photo.destroy');
+    Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
     // Pilih mode pengguna: Penyewa atau Pemilik (bisa ditukar kapan saja)
     Route::get('/pilih-mode', [ModeController::class, 'pilih'])->name('mode.pilih');
     Route::post('/pilih-mode/{mode}', [ModeController::class, 'set'])->whereIn('mode', ['penyewa', 'pemilik'])->name('mode.set');
