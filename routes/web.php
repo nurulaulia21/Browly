@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardPemilikController;
 use App\Http\Controllers\DashboardPenyewaController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ModeController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PembayaranController;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 // Halaman Publik
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/media/barang/{file}', [MediaController::class, 'barang'])->where('file', '[A-Za-z0-9._\-]+')->name('media.barang');
 Route::get('/avatar/{user}', [ProfileController::class, 'avatar'])->name('avatar.show');
 Route::get('/barangs', [BarangController::class, 'index'])->name('barangs.index');
 Route::get('/barangs/{slug}', [BarangController::class, 'show'])->name('barangs.show');
@@ -43,7 +45,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [PasswordResetController::class, 'update'])->middleware('throttle:6,1')->name('password.update');
 });
 
-Route::get('/quick-login/{role}', [AuthController::class, 'quickLogin'])->name('quick-login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Rute Pengguna Terautentikasi (Auth)

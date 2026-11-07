@@ -43,7 +43,8 @@ class Barang extends Model
             return $value;
         }
 
-        return asset('storage/' . $value);
+        // Foto hasil unggahan disajikan lewat route, tanpa perlu `php artisan storage:link`
+        return route('media.barang', ['file' => basename($value)]);
     }
 
     protected static function booted(): void

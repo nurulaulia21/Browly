@@ -41,25 +41,6 @@
                 </span>
                 <span class="hidden sm:inline text-slate-400 text-xs font-medium">“Barang yang jarang digunakan tidak harus selalu dibeli”</span>
             </div>
-
-            <!-- Quick Demo Login Switcher -->
-            <div class="flex items-center gap-1.5 overflow-x-auto text-xs">
-                <span class="text-slate-400 mr-1 hidden md:inline text-[11px] font-medium flex items-center gap-1">
-                    <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i> Akses Cepat Demo:
-                </span>
-                <a href="{{ route('quick-login', 'siti') }}" class="px-2.5 py-1 rounded-lg bg-slate-900/90 hover:bg-emerald-600 hover:text-white border border-slate-800 hover:border-emerald-500 transition font-medium text-slate-300 flex items-center gap-1.5 shadow-2xs">
-                    <i data-lucide="user" class="w-3 h-3 text-emerald-400"></i>
-                    <span>Pengguna: Siti</span>
-                </a>
-                <a href="{{ route('quick-login', 'budi') }}" class="px-2.5 py-1 rounded-lg bg-slate-900/90 hover:bg-indigo-600 hover:text-white border border-slate-800 hover:border-indigo-500 transition font-medium text-slate-300 flex items-center gap-1.5 shadow-2xs">
-                    <i data-lucide="store" class="w-3 h-3 text-indigo-400"></i>
-                    <span>Pengguna: Budi</span>
-                </a>
-                <a href="{{ route('quick-login', 'admin') }}" class="px-2.5 py-1 rounded-lg bg-slate-900/90 hover:bg-amber-600 hover:text-white border border-slate-800 hover:border-amber-500 transition font-medium text-slate-300 flex items-center gap-1.5 shadow-2xs">
-                    <i data-lucide="shield-check" class="w-3 h-3 text-amber-400"></i>
-                    <span>Admin</span>
-                </a>
-            </div>
         </div>
     </header>
 
@@ -70,11 +51,7 @@
                 <!-- Logo & Brand -->
                 <div class="flex items-center gap-8">
                     <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                        <div class="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 p-0.5 shadow-sm shadow-emerald-500/20 group-hover:scale-105 transition duration-200">
-                            <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center overflow-hidden">
-                                <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-8 h-8 object-contain">
-                            </div>
-                        </div>
+                        <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-11 h-11 object-contain group-hover:scale-105 transition duration-200">
                         <div>
                             <span class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-1.5">
                                 Browly
@@ -257,11 +234,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <div class="md:col-span-1 space-y-3.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 p-0.5 shadow-sm">
-                            <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
-                                <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-6 h-6 object-contain">
-                            </div>
-                        </div>
+                        <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-9 h-9 object-contain">
                         <span class="text-xl font-extrabold text-white tracking-tight">Browly</span>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed">

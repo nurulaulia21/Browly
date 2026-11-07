@@ -83,28 +83,4 @@ class AuthController extends Controller
 
         return redirect()->route('home')->with('success', 'Anda telah berhasil keluar.');
     }
-
-    public function quickLogin(string $role): RedirectResponse
-    {
-        // Hanya 2 jenis akun: admin & pengguna (2 akun demo pengguna: Budi & Siti)
-        $email = match ($role) {
-            'admin' => 'admin@borrowly.test',
-            'budi' => 'pemilik@borrowly.test',
-            default => 'penyewa@borrowly.test',
-        };
-
-        $user = User::where('email', $email)->first();
-        if (! $user) {
-            return redirect()->route('login')->with('error', 'Akun demo tidak ditemukan.');
-        }
-
-        Auth::login($user);
-        request()->session()->regenerate();
-
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard')->with('info', 'Masuk cepat sebagai Admin Browly.');
-        }
-
-        return redirect()->route('mode.pilih')->with('info', 'Masuk cepat sebagai ' . $user->name . '. Silakan pilih mode.');
-    }
 }

@@ -9,9 +9,7 @@
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
         <a href="{{ route('home') }}" class="inline-block group mb-3">
-            <div class="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 flex items-center justify-center p-2.5 mx-auto shadow-md group-hover:scale-105 transition-all duration-300">
-                <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-full h-full object-contain">
-            </div>
+            <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-20 h-20 object-contain mx-auto group-hover:scale-105 transition-all duration-300">
         </a>
         <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
             Daftar Akun Browly

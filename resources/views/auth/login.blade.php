@@ -9,9 +9,7 @@
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
         <a href="{{ route('home') }}" class="inline-block group mb-3">
-            <div class="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 flex items-center justify-center p-2.5 mx-auto shadow-md group-hover:scale-105 transition-all duration-300">
-                <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-full h-full object-contain">
-            </div>
+            <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-20 h-20 object-contain mx-auto group-hover:scale-105 transition-all duration-300">
         </a>
         <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
             Masuk ke Browly
@@ -22,31 +20,6 @@
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <!-- Quick 1-Click Demo Box -->
-        <div class="mb-6 p-4 sm:p-5 rounded-3xl bg-slate-950 text-white shadow-xl shadow-slate-900/10 border border-slate-800">
-            <div class="text-[11px] font-extrabold text-emerald-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
-                <span>1-Klik Masuk Akun Demo (RPLO 2026)</span>
-            </div>
-            <div class="grid grid-cols-3 gap-2">
-                <a href="{{ route('quick-login', 'siti') }}"
-                   class="p-2.5 rounded-2xl bg-slate-900 hover:bg-emerald-600 border border-slate-800 hover:border-emerald-500 transition-all duration-200 text-center text-xs font-bold text-slate-200 flex flex-col items-center gap-1">
-                    <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i>
-                    <span>Pengguna: Siti</span>
-                </a>
-                <a href="{{ route('quick-login', 'budi') }}"
-                   class="p-2.5 rounded-2xl bg-slate-900 hover:bg-indigo-600 border border-slate-800 hover:border-indigo-500 transition-all duration-200 text-center text-xs font-bold text-slate-200 flex flex-col items-center gap-1">
-                    <i data-lucide="store" class="w-4 h-4 text-indigo-400"></i>
-                    <span>Pengguna: Budi</span>
-                </a>
-                <a href="{{ route('quick-login', 'admin') }}"
-                   class="p-2.5 rounded-2xl bg-slate-900 hover:bg-amber-600 border border-slate-800 hover:border-amber-500 transition-all duration-200 text-center text-xs font-bold text-slate-200 flex flex-col items-center gap-1">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-amber-400"></i>
-                    <span>Admin</span>
-                </a>
-            </div>
-        </div>
-
         <!-- Main Login Card -->
         <div class="bg-white/95 backdrop-blur-xl py-8 px-6 sm:px-10 shadow-xl shadow-slate-200/60 border border-slate-200/90 rounded-3xl">
             <form class="space-y-4" action="{{ route('login') }}" method="POST">
