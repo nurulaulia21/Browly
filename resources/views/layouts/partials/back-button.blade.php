@@ -29,7 +29,7 @@
 @endphp
 
 @if($config)
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 -mb-3">
+    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 pt-5 -mb-3">
         <a href="{{ $config[0] }}"
            @if($config[2])
            onclick="if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { history.back(); return false; }"

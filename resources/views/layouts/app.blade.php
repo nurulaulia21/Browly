@@ -26,6 +26,28 @@
         /* Sembunyikan ikon mata/hapus bawaan browser (Edge) agar tidak dobel dengan tombol kita */
         input[type="password"]::-ms-reveal,
         input[type="password"]::-ms-clear { display: none; }
+
+        /* Efek gerak logo Browly */
+        @keyframes browly-float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50%      { transform: translateY(-8px) rotate(2deg); }
+        }
+        @keyframes browly-glow {
+            0%, 100% { opacity: .35; transform: scale(.9); }
+            50%      { opacity: .75; transform: scale(1.15); }
+        }
+        @keyframes browly-wiggle {
+            0%, 100% { transform: rotate(0) scale(1.08); }
+            25%      { transform: rotate(-8deg) scale(1.12); }
+            75%      { transform: rotate(8deg) scale(1.12); }
+        }
+        .browly-float { animation: browly-float 3.6s ease-in-out infinite; }
+        .browly-glow  { animation: browly-glow 3.6s ease-in-out infinite; }
+        .browly-nav-logo { transition: transform .2s ease; }
+        .group:hover .browly-nav-logo { animation: browly-wiggle .6s ease-in-out; }
+        @media (prefers-reduced-motion: reduce) {
+            .browly-float, .browly-glow, .group:hover .browly-nav-logo { animation: none; }
+        }
     </style>
     @stack('styles')
 </head>
@@ -33,7 +55,7 @@
 
     <!-- Top Announcement & Demo Switcher Bar -->
     <header class="bg-slate-950 text-slate-300 text-xs py-2 px-4 border-b border-slate-800/80 sticky top-0 z-50 backdrop-blur-md bg-slate-950/90">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
+        <div class="w-full mx-auto flex flex-wrap items-center justify-between gap-2.5">
             <div class="flex items-center gap-2.5">
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -46,12 +68,12 @@
 
     <!-- Main Navigation Bar -->
     <nav class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-[37px] z-40 transition-all shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <!-- Logo & Brand -->
                 <div class="flex items-center gap-8">
                     <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                        <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-11 h-11 object-contain group-hover:scale-105 transition duration-200">
+                        <img src="{{ asset('images/logo.png') }}" alt="Browly" class="browly-nav-logo w-12 h-12 object-contain">
                         <div>
                             <span class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-1.5">
                                 Browly
@@ -159,7 +181,7 @@
     </nav>
 
     <!-- Flash Notifications -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 w-full">
+    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 mt-5 w-full">
         @if(session('success'))
             <div class="flash-toast flex items-center justify-between gap-3 p-4 mb-3 text-sm rounded-2xl bg-emerald-50/95 text-emerald-900 border border-emerald-200/90 shadow-sm shadow-emerald-500/10 backdrop-blur-xs transition-all">
                 <div class="flex items-center gap-3">
@@ -230,7 +252,7 @@
 
     <!-- Footer -->
     <footer class="bg-slate-950 text-slate-400 mt-20 border-t border-slate-800/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-14">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <div class="md:col-span-1 space-y-3.5">
                     <div class="flex items-center gap-3">

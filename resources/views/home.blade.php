@@ -9,9 +9,14 @@
     <div class="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[720px] sm:w-[960px] h-[380px] bg-gradient-to-tr from-emerald-400/20 via-teal-300/15 to-cyan-400/20 blur-3xl rounded-full opacity-80"></div>
     <div class="pointer-events-none absolute top-40 right-[-100px] w-80 h-80 bg-emerald-300/15 blur-3xl rounded-full"></div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative w-full mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Hero Text -->
         <div class="text-center max-w-3xl mx-auto pt-4 sm:pt-8">
+            <div class="relative mx-auto mb-4" style="width:clamp(96px,9vw,112px);height:clamp(96px,9vw,112px);">
+                <div class="browly-glow absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-400 to-cyan-300 blur-2xl"></div>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo Browly" class="browly-float relative w-full h-full object-contain drop-shadow-lg">
+            </div>
+
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-100/70 text-emerald-800 border border-emerald-200/60 mb-6 shadow-xs backdrop-blur-sm">
                 <span class="relative flex h-2 w-2">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -20,7 +25,7 @@
                 <span>Platform Rental Peer-to-Peer Wilayah Lokal</span>
             </div>
 
-            <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 leading-[1.12]">
+            <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 leading-[1.12]">
                 Barang yang jarang dipakai <br class="hidden sm:inline">
                 <span class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
                     tidak harus selalu dibeli.
@@ -122,7 +127,7 @@
 </div>
 
 <!-- Category Section -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+<div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="flex items-center justify-between mb-8">
         <div>
             <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Kategori Pilihan</span>
@@ -160,7 +165,7 @@
 
 <!-- Featured Items Section -->
 <div class="bg-gradient-to-b from-slate-100/80 via-white to-slate-100/50 py-16 sm:py-20 border-y border-slate-200/70">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
             <div>
                 <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Paling Banyak Dicari</span>
@@ -251,7 +256,7 @@
 </div>
 
 <!-- Workflow Section: Alur Transaksi -->
-<div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="py-20 w-full mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center max-w-2xl mx-auto mb-16">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-emerald-700 bg-emerald-100/70 mb-2">
             <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Transparan & Bebas Khawatir
@@ -326,7 +331,7 @@
 </div>
 
 <!-- Owner Callout Banner -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+<div class="w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16">
     <div class="relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-700 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl shadow-emerald-900/10 flex flex-col md:flex-row items-center justify-between gap-8">
         <!-- Decorative Glow -->
         <div class="pointer-events-none absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 blur-2xl rounded-full"></div>

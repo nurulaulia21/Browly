@@ -9,7 +9,7 @@
     $labelCls = 'block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5';
 @endphp
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+<div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
     <div class="mb-6">
         <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100/70 text-emerald-800">
             <i data-lucide="user-round" class="w-3.5 h-3.5"></i> Akun Saya

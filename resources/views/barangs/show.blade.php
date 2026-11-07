@@ -3,7 +3,7 @@
 @section('title', $barang->nama_barang . ' - Browly')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+<div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
     <!-- Top Navigation & Back Button -->
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <a href="{{ route('barangs.index') }}"
