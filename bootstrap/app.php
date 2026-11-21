@@ -13,6 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Di Vercel aplikasi berada di belakang proxy HTTPS; percayai header-nya
+        // agar alamat CSS, gambar, dan tautan memakai https:// (bukan http://).
+        $middleware->trustProxies(at: '*');
+
         // Daftarkan alias role yang digunakan pada routes/web.php.
         $middleware->alias([
             'role' => EnsureUserHasRole::class,

@@ -91,7 +91,25 @@ class BarangController extends Controller
             ->take(4)
             ->get();
 
-        return view('barangs.show', compact('barang', 'activeBookings', 'blockedDates', 'similarBarangs'));
+        $ownerStats = null;
+        $ownerBookings = null;
+        if (auth()->check() && (auth()->id() === $barang->user_id || auth()->user()->isAdmin())) {
+            $ownerStats = [
+                'total_rent_count' => $barang->bookings()->whereIn('status', ['DIBAYAR', 'AKTIF', 'SELESAI'])->count(),
+                'total_earnings' => (int) $barang->bookings()->whereIn('status', ['DIBAYAR', 'AKTIF', 'SELESAI'])->sum('biaya_sewa'),
+                'pending_count' => $barang->bookings()->where('status', 'MENUNGGU_PERSETUJUAN')->count(),
+                'active_count' => $barang->bookings()->whereIn('status', ['DIBAYAR', 'AKTIF'])->count(),
+            ];
+
+            $ownerBookings = $barang->bookings()
+                ->with(['penyewa'])
+                ->whereIn('status', ['MENUNGGU_PERSETUJUAN', 'DISETUJUI', 'MENUNGGU_PEMBAYARAN', 'DIBAYAR', 'AKTIF'])
+                ->latest()
+                ->take(5)
+                ->get();
+        }
+
+        return view('barangs.show', compact('barang', 'activeBookings', 'blockedDates', 'similarBarangs', 'ownerStats', 'ownerBookings'));
     }
 
     public function checkAvailability(Request $request, Barang $barang): JsonResponse

@@ -21,8 +21,8 @@ class BookingController extends Controller
     {
         $user = Auth::user();
 
-        if ($barang->user_id === $user->id) {
-            return back()->with('error', 'Anda tidak dapat menyewa barang milik Anda sendiri.');
+        if ($barang->user_id === $user->id && session('mode') === 'pemilik') {
+            return back()->with('error', 'Silakan beralih ke Mode Penyewa terlebih dahulu untuk melakukan booking.');
         }
 
         $validated = $request->validate([

@@ -186,6 +186,20 @@ class DashboardPemilikController extends Controller
             ->with('success', 'Data barang berhasil diperbarui!');
     }
 
+    public function toggleStatus(Barang $barang): RedirectResponse
+    {
+        if ($barang->user_id !== Auth::id() && ! Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
+        $newStatus = $barang->status === 'tersedia' ? 'tidak_tersedia' : 'tersedia';
+        $barang->update(['status' => $newStatus]);
+
+        $statusText = $newStatus === 'tersedia' ? 'Tersedia' : 'Tidak Tersedia';
+
+        return back()->with('success', "Status barang berhasil diubah menjadi {$statusText}.");
+    }
+
     public function destroyBarang(Barang $barang): RedirectResponse
     {
         if ($barang->user_id !== Auth::id() && ! Auth::user()->isAdmin()) {

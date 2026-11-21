@@ -96,8 +96,14 @@
 
     @php
         $user = auth()->user();
-        $isPenyewa = $user->id === $booking->penyewa_id;
-        $isPemilik = $user->id === $booking->pemilik_id;
+        $activeMode = session('mode');
+        if ($booking->penyewa_id === $booking->pemilik_id && $user->id === $booking->penyewa_id) {
+            $isPemilik = $activeMode === 'pemilik';
+            $isPenyewa = $activeMode !== 'pemilik';
+        } else {
+            $isPenyewa = $user->id === $booking->penyewa_id;
+            $isPemilik = $user->id === $booking->pemilik_id;
+        }
     @endphp
 
     @if($isPemilik && $booking->status === 'MENUNGGU_PERSETUJUAN')

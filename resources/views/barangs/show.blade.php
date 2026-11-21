@@ -114,7 +114,13 @@
                         <p class="text-xs text-slate-500 mt-0.5">{{ $barang->user->alamat_lengkap ?? 'Makassar, Sulawesi Selatan' }}</p>
                     </div>
                 </div>
-                <div class="text-right">
+                <div class="text-right flex flex-col items-end gap-1">
+                    @if(auth()->check() && auth()->id() === $barang->user_id)
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <i data-lucide="user-check" class="w-3 h-3 mr-1 text-emerald-700"></i>
+                            Barang Milik Anda
+                        </span>
+                    @endif
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5 mr-1 text-indigo-600"></i>
                         <span>Terverifikasi</span>
@@ -271,166 +277,188 @@
                 </div>
 
                 @auth
-                    @if(auth()->id() === $barang->user_id)
-                        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed">
-                            <div class="flex items-center gap-1.5 font-bold mb-1">
-                                <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0"></i>
-                                <span>Informasi Pemilik:</span>
-                            </div>
-                            <p>Anda adalah pemilik barang ini. Anda dapat mengelola ketersediaan tanggal atau memperbarui data barang di Dashboard Pemilik.</p>
-                        </div>
-                        <a href="{{ route('pemilik.barang.edit', $barang->id) }}"
-                           class="mt-4 flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition shadow-sm">
-                            <i data-lucide="edit-3" class="w-4 h-4"></i>
-                            <span>Edit Data Barang Ini</span>
-                        </a>
-                    @else
-                        <form action="{{ route('booking.store', $barang->id) }}" method="POST" id="bookingForm" class="space-y-4">
-                            @csrf
-
-                            <!-- Date Inputs -->
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-                                        Tanggal Mulai
-                                    </label>
-                                    <input type="date" name="tanggal_mulai" id="tanggal_mulai" required
-                                           min="{{ date('Y-m-d') }}"
-                                           value="{{ old('tanggal_mulai', date('Y-m-d')) }}"
-                                           class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white font-semibold">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-                                        Tanggal Selesai
-                                    </label>
-                                    <input type="date" name="tanggal_selesai" id="tanggal_selesai" required
-                                           min="{{ date('Y-m-d') }}"
-                                           value="{{ old('tanggal_selesai', date('Y-m-d', strtotime('+1 day'))) }}"
-                                           class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white font-semibold">
-                                </div>
-                            </div>
-
-                            <!-- Live Availability Notice -->
-                            <div id="availabilityNotice" class="hidden p-3.5 rounded-2xl text-xs flex items-center gap-2 font-medium"></div>
-
-                            <!-- Delivery Method -->
-                            <div>
-                                <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-                                    Metode Pengambilan
-                                </label>
-                                <div class="grid grid-cols-2 gap-2">
-                                    @if(in_array($barang->metode_pengambilan, ['ambil_sendiri', 'both']))
-                                        <label class="flex items-center p-3 border rounded-2xl cursor-pointer hover:border-emerald-500 text-xs has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/50 transition">
-                                            <input type="radio" name="metode_pengambilan" value="ambil_sendiri" class="sr-only" checked onchange="calculateCost()">
-                                            <div class="flex items-center gap-2">
-                                                <i data-lucide="store" class="w-4 h-4 text-emerald-600"></i>
-                                                <span class="font-bold text-slate-800">Ambil Sendiri (Rp0)</span>
-                                            </div>
-                                        </label>
-                                    @endif
-
-                                    @if(in_array($barang->metode_pengambilan, ['diantar', 'both']))
-                                        <label class="flex items-center p-3 border rounded-2xl cursor-pointer hover:border-emerald-500 text-xs has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/50 transition">
-                                            <input type="radio" name="metode_pengambilan" value="diantar" class="sr-only" {{ $barang->metode_pengambilan === 'diantar' ? 'checked' : '' }} onchange="calculateCost()">
-                                            <div class="flex items-center gap-2">
-                                                <i data-lucide="truck" class="w-4 h-4 text-emerald-600"></i>
-                                                <span class="font-bold text-slate-800">Diantar Pemilik</span>
-                                            </div>
-                                        </label>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <!-- Delivery Fields Container -->
-                            <div id="deliveryFields" class="hidden space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-                                <div>
-                                    <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1">
-                                        Perkiraan Jarak Pengantaran (KM)
-                                    </label>
-                                    <input type="number" step="0.5" min="0.5" max="50" name="jarak_km" id="jarak_km" value="5"
-                                           onchange="calculateCost()" oninput="calculateCost()"
-                                           class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white font-semibold">
-                                    <span class="text-[10px] text-slate-400 mt-1 block">Tarif: Rp{{ number_format($barang->tarif_pengantaran_per_km, 0, ',', '.') }}/km</span>
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1">
-                                        Alamat Lengkap Pengantaran
-                                    </label>
-                                    <input type="text" name="alamat_pengantaran" placeholder="Jalan, No. Rumah, Patokan lokasi"
-                                           class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white font-medium">
-                                </div>
-                            </div>
-
-                            <!-- Payment Options -->
-                            <div>
-                                <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-                                    Pilihan Metode Pembayaran
-                                </label>
-                                <div class="grid grid-cols-2 gap-2">
-                                    @if(in_array($barang->metode_pembayaran, ['qris', 'both']))
-                                        <label class="flex items-center p-3 border rounded-2xl cursor-pointer hover:border-emerald-500 text-xs has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/50 transition">
-                                            <input type="radio" name="metode_pembayaran" value="qris" class="sr-only" checked>
-                                            <div class="flex items-center gap-2">
-                                                <i data-lucide="qr-code" class="w-4 h-4 text-emerald-600"></i>
-                                                <span class="font-bold text-slate-800">Simulasi QRIS</span>
-                                            </div>
-                                        </label>
-                                    @endif
-
-                                    @if(in_array($barang->metode_pembayaran, ['cash', 'both']))
-                                        <label class="flex items-center p-3 border rounded-2xl cursor-pointer hover:border-emerald-500 text-xs has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/50 transition">
-                                            <input type="radio" name="metode_pembayaran" value="cash" class="sr-only" {{ $barang->metode_pembayaran === 'cash' ? 'checked' : '' }}>
-                                            <div class="flex items-center gap-2">
-                                                <i data-lucide="banknote" class="w-4 h-4 text-emerald-600"></i>
-                                                <span class="font-bold text-slate-800">Tunai (Cash / COD)</span>
-                                            </div>
-                                        </label>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <!-- Notes -->
-                            <div>
-                                <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1">
-                                    Catatan / Kebutuhan Tambahan
-                                </label>
-                                <textarea name="catatan_penyewa" rows="2" placeholder="Misal: untuk acara akhir pekan, mohon disiapkan tas cadangan"
-                                          class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"></textarea>
-                            </div>
-
-                            <!-- Real-time Cost Calculation Card -->
-                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
-                                <div class="flex justify-between text-slate-600 font-medium">
-                                    <span>Biaya Sewa (<span id="calcDays" class="font-bold text-slate-800">1</span> hari)</span>
-                                    <span class="font-bold text-slate-800" id="calcRental">Rp0</span>
-                                </div>
-                                <div class="flex justify-between text-slate-600 font-medium">
-                                    <span>Ongkos Kirim</span>
-                                    <span class="font-bold text-slate-800" id="calcOngkir">Rp0</span>
-                                </div>
-                                <div class="pt-2 border-t border-slate-200 flex justify-between text-sm font-extrabold text-slate-900">
-                                    <span>Total Biaya</span>
-                                    <span class="text-emerald-600 font-black text-base" id="calcTotal">Rp0</span>
-                                </div>
-                            </div>
-
-                            <!-- Rules Micro-Notice -->
-                            <div class="p-3.5 rounded-2xl bg-blue-50/80 border border-blue-100 text-[11px] text-blue-900 space-y-1">
-                                <div class="font-bold flex items-center gap-1.5 text-blue-800">
-                                    <i data-lucide="info" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
-                                    <span>Ketentuan Transaksi:</span>
-                                </div>
-                                <p>• Pemilik memiliki waktu <strong>24 jam</strong> untuk menyetujui booking Anda.</p>
-                                <p>• Ruang chat resmi aktif setelah pembayaran berhasil diselesaikan.</p>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <button type="submit" id="btnSubmitBooking"
-                                    class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm transition-all duration-200 shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 hover:-translate-y-0.5">
-                                <i data-lucide="send" class="w-4 h-4"></i>
-                                <span>Ajukan Booking Sekarang</span>
+                    @if(auth()->id() === $barang->user_id && session('mode') === 'pemilik')
+                        {{-- Tab Switcher: Kelola Pemilik vs Pratinjau Penyewa --}}
+                        <div class="flex items-center p-1 bg-slate-100 rounded-2xl mb-6 text-xs font-bold">
+                            <button type="button" id="tabOwnerBtn" onclick="toggleOwnerView('owner')"
+                                    class="flex-1 py-2 px-3 rounded-xl bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                <span>Kelola Barang</span>
                             </button>
-                        </form>
+                            <button type="button" id="tabPreviewBtn" onclick="toggleOwnerView('preview')"
+                                    class="flex-1 py-2 px-3 rounded-xl text-slate-500 hover:text-slate-800 flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                <span>Pratinjau Penyewa</span>
+                            </button>
+                        </div>
+
+                        {{-- Panel 1: Kelola Barang (Pemilik) --}}
+                        <div id="ownerControlPanel" class="space-y-5">
+                            {{-- Status Barang & Saklar Cepat --}}
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Status Barang</span>
+                                    @php
+                                        $badgeColor = match($barang->status) {
+                                            'tersedia' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                                            'tidak_tersedia' => 'bg-amber-100 text-amber-800 border-amber-200',
+                                            'nonaktif' => 'bg-slate-200 text-slate-700 border-slate-300',
+                                            default => 'bg-slate-100 text-slate-700 border-slate-200',
+                                        };
+                                        $badgeText = match($barang->status) {
+                                            'tersedia' => 'Tersedia di Katalog',
+                                            'tidak_tersedia' => 'Sedang Tidak Tersedia',
+                                            'nonaktif' => 'Nonaktif dari Katalog',
+                                            default => ucfirst($barang->status),
+                                        };
+                                    @endphp
+                                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $badgeColor }}">
+                                        {{ $badgeText }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-200/60">
+                                    <p class="text-[11px] text-slate-500">
+                                        {{ $barang->status === 'tersedia' ? 'Barang dapat ditemukan dan dibooking penyewa.' : 'Barang sementara disembunyikan dari katalog sewa.' }}
+                                    </p>
+                                    <form action="{{ route('pemilik.barang.toggle-status', $barang->id) }}" method="POST" class="shrink-0">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit"
+                                                class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 {{ $barang->status === 'tersedia' ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs' }}">
+                                            <i data-lucide="{{ $barang->status === 'tersedia' ? 'pause-circle' : 'play-circle' }}" class="w-3.5 h-3.5"></i>
+                                            <span>{{ $barang->status === 'tersedia' ? 'Nonaktifkan' : 'Aktifkan' }}</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            {{-- Statistik Ringkas Barang --}}
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                                    <span class="text-[10px] text-slate-400 block font-semibold uppercase">Total Sewa</span>
+                                    <span class="text-sm font-black text-slate-900 mt-0.5 block">{{ $ownerStats['total_rent_count'] ?? 0 }}x</span>
+                                </div>
+                                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                                    <span class="text-[10px] text-slate-400 block font-semibold uppercase">Pendapatan</span>
+                                    <span class="text-xs font-black text-emerald-600 mt-0.5 block">Rp{{ number_format($ownerStats['total_earnings'] ?? 0, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                                    <span class="text-[10px] text-slate-400 block font-semibold uppercase">Rating</span>
+                                    <span class="text-xs font-black text-amber-500 mt-0.5 flex items-center justify-center gap-0.5">
+                                        <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i> {{ $barang->average_rating }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- Notifikasi Booking Masuk --}}
+                            @if(isset($ownerBookings) && $ownerBookings->where('status', 'MENUNGGU_PERSETUJUAN')->count() > 0)
+                                <div class="space-y-3">
+                                    @foreach($ownerBookings->where('status', 'MENUNGGU_PERSETUJUAN') as $pending)
+                                        <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-50 to-amber-100/40 border border-amber-300 text-amber-900 text-xs">
+                                            <div class="flex items-center justify-between mb-1.5">
+                                                <span class="inline-flex items-center gap-1 font-bold text-amber-800 bg-amber-200/80 px-2 py-0.5 rounded-md text-[10px] uppercase">
+                                                    <i data-lucide="bell" class="w-3 h-3"></i> Booking Masuk
+                                                </span>
+                                                <span class="font-mono text-[10px] font-bold text-slate-600">{{ $pending->booking_code }}</span>
+                                            </div>
+                                            <div class="font-bold text-slate-900 mb-0.5">Penyewa: {{ $pending->penyewa->name ?? 'Pengguna' }}</div>
+                                            <p class="text-[11px] text-slate-600 mb-3">
+                                                {{ $pending->tanggal_mulai->format('d M') }} - {{ $pending->tanggal_selesai->format('d M Y') }} ({{ $pending->jumlah_hari }} hari) • Total: <strong>Rp{{ number_format($pending->total_biaya, 0, ',', '.') }}</strong>
+                                            </p>
+                                            <div class="flex items-center gap-2">
+                                                <form action="{{ route('pemilik.booking.approve', $pending->id) }}" method="POST" class="flex-1">
+                                                    @csrf
+                                                    <button type="submit" onclick="return confirm('Setujui permintaan sewa ini?')"
+                                                            class="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1 shadow-xs transition cursor-pointer">
+                                                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Setujui
+                                                    </button>
+                                                </form>
+                                                <a href="{{ route('booking.show', $pending->booking_code) }}"
+                                                   class="px-3 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition">
+                                                    Detail
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            {{-- Tombol Tindakan Pemilik --}}
+                            <div class="space-y-2.5 pt-1">
+                                <a href="{{ route('pemilik.barang.edit', $barang->id) }}"
+                                   class="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all duration-200">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                    <span>Edit Data Barang Lengkap</span>
+                                </a>
+
+                                <button type="button" onclick="document.getElementById('blockDateDetailModal').classList.remove('hidden')"
+                                        class="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/90 font-bold text-xs transition cursor-pointer">
+                                    <i data-lucide="calendar" class="w-4 h-4 text-amber-600"></i>
+                                    <span>Blokir Tanggal Kalender (Pakai Sendiri)</span>
+                                </button>
+
+                                <a href="{{ route('pemilik.dashboard', ['tab' => 'barang_saya']) }}"
+                                   class="flex items-center justify-center gap-2 w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition">
+                                    <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+                                    <span>Buka Dashboard Pemilik</span>
+                                </a>
+                            </div>
+
+                            {{-- Daftar Tanggal Diblokir Pribadi --}}
+                            <div class="pt-5 border-t border-slate-100">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                        <i data-lucide="calendar-off" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Tanggal Diblokir Pribadi ({{ $barang->blockedDates->count() }})</span>
+                                    </span>
+                                    <button type="button" onclick="document.getElementById('blockDateDetailModal').classList.remove('hidden')"
+                                            class="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer">
+                                        <i data-lucide="plus" class="w-3 h-3"></i> Tambah
+                                    </button>
+                                </div>
+
+                                @if($barang->blockedDates->count() > 0)
+                                    <div class="space-y-2 max-h-44 overflow-y-auto pr-1">
+                                        @foreach($barang->blockedDates as $blocked)
+                                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                                                <div>
+                                                    <span class="font-bold text-slate-800 block text-[11px]">
+                                                        {{ \Carbon\Carbon::parse($blocked->start_date)->format('d M') }} - {{ \Carbon\Carbon::parse($blocked->end_date)->format('d M Y') }}
+                                                    </span>
+                                                    <span class="text-[10px] text-slate-500">{{ $blocked->alasan ?? 'Digunakan pribadi' }}</span>
+                                                </div>
+                                                <form action="{{ route('pemilik.blocked-date.destroy', $blocked->id) }}" method="POST" onsubmit="return confirm('Buka kembali ketersediaan tanggal ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition cursor-pointer" title="Hapus pemblokiran">
+                                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                                        Belum ada tanggal pemakaian pribadi yang diblokir. Tanggal kalender terbuka penuh untuk penyewa.
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Panel 2: Pratinjau Tampilan Penyewa (Simulasi) --}}
+                        <div id="renterPreviewPanel" class="hidden space-y-4">
+                            <div class="p-3.5 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 text-xs leading-relaxed flex items-start gap-2">
+                                <i data-lucide="info" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i>
+                                <div>
+                                    <span class="font-bold block">Mode Pratinjau Penyewa:</span>
+                                    <span>Formulir ini adalah simulasi tampilan yang dilihat oleh calon penyewa Anda untuk menguji perhitungan tarif dan ketersediaan.</span>
+                                </div>
+                            </div>
+
+                            @include('barangs.partials.booking-form', ['isOwnerPreview' => true])
+                        </div>
+                    @else
+                        @include('barangs.partials.booking-form', ['isOwnerPreview' => false])
                     @endif
                 @else
                     <div class="text-center py-6">
@@ -458,10 +486,92 @@
     </div>
 </div>
 
+{{-- Modal Blokir Tanggal Langsung di Halaman Detail --}}
+@auth
+    @if(auth()->id() === $barang->user_id && session('mode') === 'pemilik')
+        <div id="blockDateDetailModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Blokir Tanggal Kalender</span>
+                    </h4>
+                    <button type="button" onclick="document.getElementById('blockDateDetailModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                    Gunakan fitur ini jika barang sedang Anda gunakan sendiri, dalam pemeliharaan, atau diservis sehingga tidak dapat disewa pengguna lain pada rentang tanggal tersebut.
+                </p>
+                <form action="{{ route('pemilik.barang.block-date', $barang->id) }}" method="POST">
+                    @csrf
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Mulai Tanggal</label>
+                            <input type="date" name="start_date" required min="{{ date('Y-m-d') }}"
+                                   value="{{ date('Y-m-d') }}"
+                                   class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Selesai Tanggal</label>
+                            <input type="date" name="end_date" required min="{{ date('Y-m-d') }}"
+                                   value="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                                   class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Alasan Pemblokiran (Opsional)</label>
+                        <input type="text" name="alasan" placeholder="Misal: Dipakai acara keluarga, diservis berkala"
+                               class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="document.getElementById('blockDateDetailModal').classList.add('hidden')"
+                                class="px-4 py-2 text-xs font-semibold text-slate-600 rounded-xl hover:bg-slate-100 cursor-pointer">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs cursor-pointer">
+                            Simpan Blokir Tanggal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+@endauth
+
 @push('scripts')
 <script>
     const pricePerDay = {{ $barang->harga_sewa_per_hari }};
     const deliveryRatePerKm = {{ $barang->tarif_pengantaran_per_km }};
+
+    function toggleOwnerView(mode) {
+        const ownerPanel = document.getElementById('ownerControlPanel');
+        const previewPanel = document.getElementById('renterPreviewPanel');
+        const tabOwnerBtn = document.getElementById('tabOwnerBtn');
+        const tabPreviewBtn = document.getElementById('tabPreviewBtn');
+
+        if (!ownerPanel || !previewPanel) return;
+
+        if (mode === 'preview') {
+            ownerPanel.classList.add('hidden');
+            previewPanel.classList.remove('hidden');
+
+            if (tabPreviewBtn) tabPreviewBtn.className = 'flex-1 py-2 px-3 rounded-xl bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition cursor-pointer';
+            if (tabOwnerBtn) tabOwnerBtn.className = 'flex-1 py-2 px-3 rounded-xl text-slate-500 hover:text-slate-800 flex items-center justify-center gap-1.5 transition cursor-pointer';
+
+            calculateCost();
+        } else {
+            previewPanel.classList.add('hidden');
+            ownerPanel.classList.remove('hidden');
+
+            if (tabOwnerBtn) tabOwnerBtn.className = 'flex-1 py-2 px-3 rounded-xl bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition cursor-pointer';
+            if (tabPreviewBtn) tabPreviewBtn.className = 'flex-1 py-2 px-3 rounded-xl text-slate-500 hover:text-slate-800 flex items-center justify-center gap-1.5 transition cursor-pointer';
+        }
+
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    }
 
     function calculateCost() {
         const startInput = document.getElementById('tanggal_mulai');

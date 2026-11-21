@@ -9,7 +9,7 @@
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
         <a href="{{ route('home') }}" class="inline-block group mb-3">
-            <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-20 h-20 object-contain mx-auto group-hover:scale-105 transition-all duration-300">
+            <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-24 h-24 object-contain mx-auto group-hover:scale-105 transition-all duration-300">
         </a>
         <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
             Daftar Akun Browly

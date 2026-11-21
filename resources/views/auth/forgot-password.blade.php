@@ -7,9 +7,9 @@
     <div class="pointer-events-none absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-emerald-400/20 via-teal-300/15 to-indigo-400/15 blur-3xl rounded-full opacity-70"></div>
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10 px-4">
-        <div class="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 flex items-center justify-center mx-auto shadow-md mb-3">
-            <i data-lucide="key-round" class="w-8 h-8 text-emerald-600"></i>
-        </div>
+        <a href="{{ route('home') }}" class="inline-block group mb-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-24 h-24 object-contain mx-auto group-hover:scale-105 transition-all duration-300">
+        </a>
         <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">Lupa Password?</h2>
         <p class="mt-1 text-xs sm:text-sm text-slate-500">
             Masukkan email dan nomor telepon yang terdaftar. Jika cocok, Anda bisa langsung membuat password baru.

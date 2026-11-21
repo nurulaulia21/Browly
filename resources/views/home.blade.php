@@ -12,7 +12,7 @@
     <div class="relative w-full mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Hero Text -->
         <div class="text-center max-w-3xl mx-auto pt-4 sm:pt-8">
-            <div class="relative mx-auto mb-4" style="width:clamp(96px,9vw,112px);height:clamp(96px,9vw,112px);">
+            <div class="relative mx-auto mb-5" style="width:clamp(124px,11vw,148px);height:clamp(124px,11vw,148px);">
                 <div class="browly-glow absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-400 to-cyan-300 blur-2xl"></div>
                 <img src="{{ asset('images/logo.png') }}" alt="Logo Browly" class="browly-float relative w-full h-full object-contain drop-shadow-lg">
             </div>

@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pemilik/barang', [DashboardPemilikController::class, 'storeBarang'])->name('pemilik.barang.store');
         Route::get('/pemilik/barang/{barang}/edit', [DashboardPemilikController::class, 'editBarang'])->name('pemilik.barang.edit');
         Route::put('/pemilik/barang/{barang}', [DashboardPemilikController::class, 'updateBarang'])->name('pemilik.barang.update');
+        Route::patch('/pemilik/barang/{barang}/toggle-status', [DashboardPemilikController::class, 'toggleStatus'])->name('pemilik.barang.toggle-status');
         Route::delete('/pemilik/barang/{barang}', [DashboardPemilikController::class, 'destroyBarang'])->name('pemilik.barang.destroy');
 
         // Blokir Kalender Ketersediaan

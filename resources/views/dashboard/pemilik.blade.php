@@ -294,9 +294,9 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('barangs.show', $barang->slug) }}" target="_blank"
+                            <a href="{{ route('barangs.show', $barang->slug) }}"
                                class="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 font-semibold text-xs flex items-center gap-1 transition">
-                                <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Lihat
+                                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Lihat
                             </a>
                             <form action="{{ route('pemilik.barang.destroy', $barang->id) }}" method="POST" onsubmit="return confirm('Hapus barang ini secara permanen?')">
                                 @csrf
