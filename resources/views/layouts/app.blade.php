@@ -59,54 +59,6 @@
         @media (prefers-reduced-motion: reduce) {
             .browly-float, .browly-glow, .group:hover .browly-nav-logo { animation: none; }
         }
-
-        /* Efek transisi smooth sidebar collapsible */
-        #desktopSidebar {
-            transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-            will-change: margin-left, opacity;
-        }
-        #desktopSidebar.collapsed {
-            margin-left: -18rem; /* w-72 = 18rem */
-            opacity: 0;
-            pointer-events: none;
-            visibility: hidden;
-            border-right-color: transparent;
-        }
-        @media (max-width: 1024px) {
-            #desktopSidebar.collapsed {
-                margin-left: -16rem; /* w-64 = 16rem */
-            }
-        }
-
-        /* Pencegah kedipan (flicker) saat refresh dalam status collapsed */
-        html.sidebar-is-collapsed-init #desktopSidebar {
-            margin-left: -18rem !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-            visibility: hidden !important;
-            transition: none !important;
-        }
-        @media (max-width: 1024px) {
-            html.sidebar-is-collapsed-init #desktopSidebar {
-                margin-left: -16rem !important;
-            }
-        }
-
-        /* Tampilan Brand di topbar:
-           - Pada mobile (< 768px): Selalu tampil karena sidebar tersembunyi
-           - Pada desktop (>= 768px): Tampil HANYA saat sidebar dalam kondisi collapsed/tertutup,
-             sehingga tidak ada 2 logo Browly berdampingan saat sidebar terbuka */
-        @media (min-width: 768px) {
-            body:not(.sidebar-is-collapsed) #topbarBrand {
-                display: none !important;
-            }
-            body.sidebar-is-collapsed #topbarBrand {
-                display: flex !important;
-            }
-            html.sidebar-is-collapsed-init body #topbarBrand {
-                display: flex !important;
-            }
-        }
     </style>
     @stack('styles')
 </head>
@@ -286,21 +238,21 @@
                             </ul>
                         </div>
 
+                <div>
+                    <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-3.5">Wilayah Layanan</h4>
+                    <p class="text-xs text-slate-400 mb-3 leading-relaxed">Makassar, Panakkukang, Tamalanrea, Rappocini, Gowa, dan sekitarnya.</p>
+                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 text-[11px] flex items-center justify-between">
                         <div>
-                            <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-3.5">Wilayah Layanan</h4>
-                            <p class="text-xs text-slate-400 mb-3 leading-relaxed">Makassar, Panakkukang, Tamalanrea, Rappocini, Gowa, dan sekitarnya.</p>
-                            <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 text-[11px] flex items-center justify-between">
-                                <div>
-                                    <span class="text-slate-400 block text-[10px]">Status Sistem:</span>
-                                    <span class="text-emerald-400 font-bold flex items-center gap-1.5 mt-0.5">
-                                        <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-ping"></span>
-                                        Siap Demo RPLO
-                                    </span>
-                                </div>
-                                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
-                            </div>
+                            <span class="text-slate-400 block text-[10px]">Status Sistem:</span>
+                            <span class="text-emerald-400 font-bold flex items-center gap-1.5 mt-0.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-ping"></span>
+                                Siap Demo RPLO
+                            </span>
                         </div>
+                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
                     </div>
+                </div>
+            </div>
 
                     <div class="mt-10 pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
                         <div>
