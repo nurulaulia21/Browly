@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\RunBookingMaintenance;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Di Vercel aplikasi berada di belakang proxy HTTPS; percayai header-nya
         // agar alamat CSS, gambar, dan tautan memakai https:// (bukan http://).
         $middleware->trustProxies(at: '*');
+
+        // Batalkan booking kedaluwarsa secara berkala tanpa cron.
+        $middleware->web(append: [RunBookingMaintenance::class]);
 
         // Daftarkan alias role yang digunakan pada routes/web.php.
         $middleware->alias([

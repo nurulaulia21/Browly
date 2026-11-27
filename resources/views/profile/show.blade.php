@@ -199,11 +199,11 @@
                     </div>
                     <div>
                         <label for="password" class="{{ $labelCls }}">Password Baru</label>
-                        <input id="password" name="password" type="password" required minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter" class="{{ $inputCls }}">
+                        <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter, huruf dan angka" class="{{ $inputCls }}">
                     </div>
                     <div>
                         <label for="password_confirmation" class="{{ $labelCls }}">Ulangi Password Baru</label>
-                        <input id="password_confirmation" name="password_confirmation" type="password" required minlength="6" autocomplete="new-password" class="{{ $inputCls }}">
+                        <input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" autocomplete="new-password" class="{{ $inputCls }}">
                     </div>
 
                     <button type="submit" class="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-2xl text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-700 transition cursor-pointer">

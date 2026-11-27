@@ -168,6 +168,11 @@
                         <div class="font-bold text-slate-400 py-1 uppercase text-[10px] tracking-wider">{{ $dayName }}</div>
                     @endforeach
 
+                    {{-- Sel kosong agar tanggal pertama jatuh tepat di kolom harinya (Senin = kolom 1) --}}
+                    @for ($k = 0; $k < $today->dayOfWeekIso - 1; $k++)
+                        <div aria-hidden="true"></div>
+                    @endfor
+
                     @for ($i = 0; $i < 28; $i++)
                         @php
                             $currentDate = $today->copy()->addDays($i);

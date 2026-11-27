@@ -25,3 +25,8 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# --- Tambahan: jangan ikut ke GitHub ---
+/database/*.sqlite
+/database/*.sqlite-journal
+/Borrowly/

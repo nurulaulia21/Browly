@@ -54,7 +54,7 @@
     </div>
 
     {{-- Tabs --}}
-    <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-6 border-b border-slate-200 text-xs font-semibold">
+    <div class="scroll-hint flex items-center gap-2 overflow-x-auto pb-2 mb-6 border-b border-slate-200 text-xs font-semibold">
         <a href="{{ route('pemilik.dashboard', ['tab' => 'booking_masuk']) }}"
            class="px-4 py-2 rounded-xl transition flex items-center gap-2 {{ $tab == 'booking_masuk' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
             <i data-lucide="bell" class="w-3.5 h-3.5"></i>

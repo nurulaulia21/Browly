@@ -21,13 +21,26 @@ class BookingController extends Controller
     {
         $user = Auth::user();
 
-        if ($barang->user_id === $user->id && session('mode') === 'pemilik') {
-            return back()->with('error', 'Silakan beralih ke Mode Penyewa terlebih dahulu untuk melakukan booking.');
+        // Pemilik tidak boleh menyewa barangnya sendiri (apa pun mode yang sedang aktif).
+        if ($barang->user_id === $user->id) {
+            return back()->with('error', 'Anda tidak dapat menyewa barang milik sendiri.');
         }
 
         $validated = $request->validate([
             'tanggal_mulai' => ['required', 'date', 'after_or_equal:today'],
-            'tanggal_selesai' => ['required', 'date', 'after_or_equal:tanggal_mulai'],
+            'tanggal_selesai' => [
+                'required', 'date', 'after_or_equal:tanggal_mulai',
+                function (string $attribute, mixed $value, \Closure $fail) use ($request) {
+                    try {
+                        $hari = \Carbon\Carbon::parse($request->input('tanggal_mulai'))->diffInDays(\Carbon\Carbon::parse($value)) + 1;
+                    } catch (\Throwable) {
+                        return; // format tanggal sudah dicek aturan lain
+                    }
+                    if ($hari > BookingService::MAX_DURASI_HARI) {
+                        $fail('Durasi sewa maksimal ' . BookingService::MAX_DURASI_HARI . ' hari per booking.');
+                    }
+                },
+            ],
             'metode_pengambilan' => ['required', 'in:ambil_sendiri,diantar'],
             'alamat_pengantaran' => ['required_if:metode_pengambilan,diantar', 'nullable', 'string', 'max:500'],
             'jarak_km' => ['required_if:metode_pengambilan,diantar', 'nullable', 'numeric', 'min:0.5', 'max:50'],

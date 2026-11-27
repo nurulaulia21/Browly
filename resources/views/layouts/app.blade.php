@@ -28,9 +28,11 @@
     </script>
 
     <style>
+        html, body {
+            overflow-x: clip;
+        }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden;
         }
     </style>
     <style>
@@ -59,13 +61,27 @@
         @media (prefers-reduced-motion: reduce) {
             .browly-float, .browly-glow, .group:hover .browly-nav-logo { animation: none; }
         }
+    
+        /* Filter katalog yang bisa dilipat (hanya layar kecil) */
+        .filter-toggle { display: none; }
+        @media (max-width: 1023.98px) {
+            .filter-toggle { display: flex; margin-bottom: .75rem; }
+            .filter-collapsible.is-closed { display: none; }
+        }
+
+        /* Petunjuk "masih bisa digeser": sisi kanan memudar selama masih ada isi tersembunyi */
+        .scroll-hint { scrollbar-width: thin; }
+        .scroll-hint.has-more {
+            -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
+            mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
+        }
     </style>
     @stack('styles')
 </head>
 <body class="min-h-screen text-slate-800 antialiased bg-slate-50/70">
-    <div class="min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+    <div class="min-h-screen flex flex-col md:flex-row">
 
-        {{-- Desktop Left Sidebar (Menu Samping Kiri) --}}
+        {{-- Desktop Left Sidebar (Menu Samping Kiri - Tetap Diam / Sticky saat halaman discroll) --}}
         <aside id="desktopSidebar" class="hidden md:flex md:w-64 lg:w-72 shrink-0 bg-white border-r border-slate-200/90 h-screen sticky top-0 flex-col justify-between z-30 shadow-xs">
             @include('layouts.partials.sidebar-content', ['isMobile' => false])
         </aside>
@@ -78,8 +94,8 @@
 
         {{-- Right Side Area: Content & Footer --}}
         <div class="flex-1 min-w-0 flex flex-col min-h-screen">
-            {{-- Top Bar with Hamburger Menu (☰) --}}
-            <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-20 px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xs">
+            {{-- Top Bar with Hamburger Menu (☰ - Tetap Diam / Sticky saat halaman discroll) --}}
+            <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xs">
                 <div class="flex items-center gap-3">
                     <button type="button" id="sidebarToggleBtn" onclick="toggleSidebar()"
                             class="p-2 rounded-xl text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200/90 hover:border-emerald-300 transition cursor-pointer flex items-center justify-center shadow-2xs group"
@@ -199,71 +215,7 @@
                 @yield('content')
             </main>
 
-            <!-- Footer -->
-            <footer class="bg-slate-950 text-slate-400 mt-20 border-t border-slate-800/80">
-                <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-14">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
-                        <div class="md:col-span-1 space-y-3.5">
-                            <div class="flex items-center gap-3">
-                                <img src="{{ asset('images/logo.png') }}" alt="Browly" class="w-11 h-11 object-contain">
-                                <span class="text-xl font-extrabold text-white tracking-tight">Browly</span>
-                            </div>
-                            <p class="text-xs text-slate-400 leading-relaxed">
-                                Platform penyewaan barang antar pengguna berbasis web dalam wilayah lokal untuk mendukung ekonomi sirkular dan efisiensi barang.
-                            </p>
-                            <div class="text-[11px] text-slate-500 font-mono flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-                                Mata Kuliah: RPLO 2026
-                            </div>
-                        </div>
 
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-3.5">Kategori Sewa</h4>
-                            <ul class="space-y-2.5 text-xs">
-                                <li><a href="{{ route('barangs.index', ['kategori' => 'kamera-fotografi']) }}" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i data-lucide="camera" class="w-3.5 h-3.5 text-slate-500"></i> Kamera & Fotografi</a></li>
-                                <li><a href="{{ route('barangs.index', ['kategori' => 'camping-outdoor']) }}" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i data-lucide="tent" class="w-3.5 h-3.5 text-slate-500"></i> Camping & Outdoor</a></li>
-                                <li><a href="{{ route('barangs.index', ['kategori' => 'proyektor-audio']) }}" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i data-lucide="tv" class="w-3.5 h-3.5 text-slate-500"></i> Proyektor & Audio</a></li>
-                                <li><a href="{{ route('barangs.index', ['kategori' => 'perlengkapan-pesta']) }}" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-slate-500"></i> Perlengkapan Pesta</a></li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-3.5">Keamanan & Aturan</h4>
-                            <ul class="space-y-2 text-xs">
-                                <li class="flex items-center gap-2"><i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i> Kalender Anti Benturan</li>
-                                <li class="flex items-center gap-2"><i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-400"></i> Batas Waktu Respon 24 Jam</li>
-                                <li class="flex items-center gap-2"><i data-lucide="qr-code" class="w-3.5 h-3.5 text-emerald-400"></i> Pembayaran QRIS & Tunai</li>
-                                <li class="flex items-center gap-2"><i data-lucide="message-square" class="w-3.5 h-3.5 text-emerald-400"></i> Chat Resmi Transaksi Lunas</li>
-                                <li class="flex items-center gap-2"><i data-lucide="shield-alert" class="w-3.5 h-3.5 text-emerald-400"></i> Pencatatan Denda & Review</li>
-                            </ul>
-                        </div>
-
-                <div>
-                    <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-3.5">Wilayah Layanan</h4>
-                    <p class="text-xs text-slate-400 mb-3 leading-relaxed">Makassar, Panakkukang, Tamalanrea, Rappocini, Gowa, dan sekitarnya.</p>
-                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 text-[11px] flex items-center justify-between">
-                        <div>
-                            <span class="text-slate-400 block text-[10px]">Status Sistem:</span>
-                            <span class="text-emerald-400 font-bold flex items-center gap-1.5 mt-0.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-ping"></span>
-                                Siap Demo RPLO
-                            </span>
-                        </div>
-                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
-                    </div>
-                </div>
-            </div>
-
-                    <div class="mt-10 pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-                        <div>
-                            &copy; {{ date('Y') }} Browly - Platform Rental Peer-to-Peer Lokal. All rights reserved.
-                        </div>
-                        <div class="text-[11px] text-slate-600">
-                            Rekayasa Perangkat Lunak Berbasis Objek (RPLO)
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     </div>
 
@@ -407,6 +359,19 @@
                     btn.setAttribute('aria-label', show ? 'Sembunyikan password' : 'Tampilkan password');
                 });
                 wrap.appendChild(btn);
+            });
+        });
+    </script>
+    <script>
+        // Tandai area yang masih bisa digeser ke kanan (tab dan tabel di layar kecil)
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.scroll-hint').forEach(function (el) {
+                function perbarui() {
+                    el.classList.toggle('has-more', el.scrollWidth - el.clientWidth - el.scrollLeft > 6);
+                }
+                el.addEventListener('scroll', perbarui, { passive: true });
+                window.addEventListener('resize', perbarui);
+                perbarui();
             });
         });
     </script>

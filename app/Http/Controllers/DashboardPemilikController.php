@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class DashboardPemilikController extends Controller
@@ -102,6 +103,45 @@ class DashboardPemilikController extends Controller
     {
         $user = Auth::user();
 
+        // 1. Sanitize Rupiah price inputs (strip dots)
+        if ($request->has('harga_sewa_per_hari')) {
+            $request->merge([
+                'harga_sewa_per_hari' => (int) str_replace('.', '', (string) $request->input('harga_sewa_per_hari')),
+            ]);
+        }
+        if ($request->has('tarif_pengantaran_per_km')) {
+            $rawTarif = $request->input('tarif_pengantaran_per_km');
+            $request->merge([
+                'tarif_pengantaran_per_km' => ($rawTarif !== null && $rawTarif !== '')
+                    ? (int) str_replace('.', '', (string) $rawTarif)
+                    : 5000,
+            ]);
+        }
+
+        // 2. Handle Custom / Other Category
+        if ($request->input('kategori_id') === 'other' || $request->filled('kategori_custom')) {
+            $customKategoriName = trim((string) $request->input('kategori_custom'));
+            if ($customKategoriName !== '') {
+                $kategori = Kategori::firstOrCreate(
+                    ['nama' => $customKategoriName],
+                    ['slug' => Str::slug($customKategoriName), 'icon' => 'tag']
+                );
+                $request->merge(['kategori_id' => $kategori->id]);
+            }
+        }
+
+        // 3. Handle Custom / Other Location (from interactive map or custom entry)
+        if ($request->input('lokasi_id') === 'other' || ($request->filled('lokasi_custom_kecamatan') && $request->filled('lokasi_custom_kota'))) {
+            $customKecamatan = trim((string) $request->input('lokasi_custom_kecamatan'));
+            $customKota = trim((string) $request->input('lokasi_custom_kota'));
+            if ($customKecamatan !== '' && $customKota !== '') {
+                $lokasi = Lokasi::firstOrCreate(
+                    ['kota' => $customKota, 'kecamatan' => $customKecamatan]
+                );
+                $request->merge(['lokasi_id' => $lokasi->id]);
+            }
+        }
+
         $validated = $request->validate([
             'nama_barang' => ['required', 'string', 'max:255'],
             'kategori_id' => ['required', 'exists:kategoris,id'],
@@ -114,6 +154,9 @@ class DashboardPemilikController extends Controller
             'foto_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
             'foto' => ['nullable', 'string', 'max:500'],
             'deskripsi' => ['required', 'string'],
+        ], [
+            'kategori_id.exists' => 'Kategori yang dipilih tidak valid atau nama kategori custom wajib diisi.',
+            'lokasi_id.exists' => 'Lokasi wilayah tidak valid atau tentukan titik lokasi pada peta.',
         ]);
 
         if ($request->hasFile('foto_file')) {
@@ -153,6 +196,45 @@ class DashboardPemilikController extends Controller
             abort(403);
         }
 
+        // 1. Sanitize Rupiah price inputs (strip dots)
+        if ($request->has('harga_sewa_per_hari')) {
+            $request->merge([
+                'harga_sewa_per_hari' => (int) str_replace('.', '', (string) $request->input('harga_sewa_per_hari')),
+            ]);
+        }
+        if ($request->has('tarif_pengantaran_per_km')) {
+            $rawTarif = $request->input('tarif_pengantaran_per_km');
+            $request->merge([
+                'tarif_pengantaran_per_km' => ($rawTarif !== null && $rawTarif !== '')
+                    ? (int) str_replace('.', '', (string) $rawTarif)
+                    : 5000,
+            ]);
+        }
+
+        // 2. Handle Custom / Other Category
+        if ($request->input('kategori_id') === 'other' || $request->filled('kategori_custom')) {
+            $customKategoriName = trim((string) $request->input('kategori_custom'));
+            if ($customKategoriName !== '') {
+                $kategori = Kategori::firstOrCreate(
+                    ['nama' => $customKategoriName],
+                    ['slug' => Str::slug($customKategoriName), 'icon' => 'tag']
+                );
+                $request->merge(['kategori_id' => $kategori->id]);
+            }
+        }
+
+        // 3. Handle Custom / Other Location (from interactive map or custom entry)
+        if ($request->input('lokasi_id') === 'other' || ($request->filled('lokasi_custom_kecamatan') && $request->filled('lokasi_custom_kota'))) {
+            $customKecamatan = trim((string) $request->input('lokasi_custom_kecamatan'));
+            $customKota = trim((string) $request->input('lokasi_custom_kota'));
+            if ($customKecamatan !== '' && $customKota !== '') {
+                $lokasi = Lokasi::firstOrCreate(
+                    ['kota' => $customKota, 'kecamatan' => $customKecamatan]
+                );
+                $request->merge(['lokasi_id' => $lokasi->id]);
+            }
+        }
+
         $validated = $request->validate([
             'nama_barang' => ['required', 'string', 'max:255'],
             'kategori_id' => ['required', 'exists:kategoris,id'],
@@ -166,6 +248,9 @@ class DashboardPemilikController extends Controller
             'foto' => ['nullable', 'string', 'max:500'],
             'status' => ['required', 'in:tersedia,tidak_tersedia,nonaktif'],
             'deskripsi' => ['required', 'string'],
+        ], [
+            'kategori_id.exists' => 'Kategori yang dipilih tidak valid atau nama kategori custom wajib diisi.',
+            'lokasi_id.exists' => 'Lokasi wilayah tidak valid atau tentukan titik lokasi pada peta.',
         ]);
 
         if ($request->hasFile('foto_file')) {
@@ -204,6 +289,14 @@ class DashboardPemilikController extends Controller
     {
         if ($barang->user_id !== Auth::id() && ! Auth::user()->isAdmin()) {
             abort(403);
+        }
+
+        // Jangan hapus barang yang punya transaksi: penghapusan akan ikut menghapus
+        // booking, pembayaran, dan chat milik penyewa. Sarankan menonaktifkan saja.
+        $jumlahBooking = $barang->bookings()->count();
+        if ($jumlahBooking > 0) {
+            return redirect()->route('pemilik.dashboard', ['tab' => 'barang_saya'])
+                ->with('error', "Barang \"{$barang->nama_barang}\" tidak dapat dihapus karena memiliki {$jumlahBooking} transaksi (riwayat sewa, pembayaran, dan chat ikut hilang). Nonaktifkan saja agar tidak tampil di katalog.");
         }
 
         $barang->delete();

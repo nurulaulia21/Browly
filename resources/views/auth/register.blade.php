@@ -97,7 +97,7 @@
                             <span>Kata Sandi</span>
                         </label>
                         <input id="password" name="password" type="password" required
-                               placeholder="Min. 6 karakter"
+                               placeholder="Min. 8 karakter, huruf dan angka"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium bg-white transition">
                     </div>
 

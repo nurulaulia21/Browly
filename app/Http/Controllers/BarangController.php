@@ -52,10 +52,10 @@ class BarangController extends Controller
         }
 
         if ($request->filled('min_harga')) {
-            $query->where('harga_sewa_per_hari', '>=', (int) $request->min_harga);
+            $query->where('harga_sewa_per_hari', '>=', (int) str_replace('.', '', (string) $request->min_harga));
         }
         if ($request->filled('max_harga')) {
-            $query->where('harga_sewa_per_hari', '<=', (int) $request->max_harga);
+            $query->where('harga_sewa_per_hari', '<=', (int) str_replace('.', '', (string) $request->max_harga));
         }
 
         $sort = $request->get('sort', 'latest');

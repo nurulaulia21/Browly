@@ -6,7 +6,8 @@ use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Password as PasswordBroker;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -44,7 +45,7 @@ class PasswordResetController extends Controller
             ])->onlyInput('email');
         }
 
-        $token = Password::broker()->createToken($user);
+        $token = PasswordBroker::broker()->createToken($user);
 
         return redirect()->route('password.reset', ['token' => $token, 'email' => $user->email]);
     }
@@ -62,14 +63,16 @@ class PasswordResetController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
         ], [
             'password.required' => 'Password baru wajib diisi.',
-            'password.min' => 'Password baru minimal 6 karakter.',
+            'password.min' => 'Password baru minimal 8 karakter.',
+            'password.letters' => 'Password baru harus mengandung huruf.',
+            'password.numbers' => 'Password baru harus mengandung angka.',
             'password.confirmed' => 'Konfirmasi password tidak sama.',
         ]);
 
-        $status = Password::reset(
+        $status = PasswordBroker::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {
                 $user->forceFill([
@@ -81,7 +84,7 @@ class PasswordResetController extends Controller
             }
         );
 
-        if ($status === Password::PASSWORD_RESET) {
+        if ($status === PasswordBroker::PASSWORD_RESET) {
             return redirect()->route('login')->with('success', 'Password berhasil diubah. Silakan masuk dengan password baru Anda.');
         }
 

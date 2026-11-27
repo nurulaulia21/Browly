@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -107,12 +108,14 @@ class ProfileController extends Controller
     {
         $request->validate([
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'string', 'min:6', 'confirmed', 'different:current_password'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed', 'different:current_password'],
         ], [
             'current_password.required' => 'Password saat ini wajib diisi.',
             'current_password.current_password' => 'Password saat ini tidak sesuai.',
             'password.required' => 'Password baru wajib diisi.',
-            'password.min' => 'Password baru minimal 6 karakter.',
+            'password.min' => 'Password baru minimal 8 karakter.',
+            'password.letters' => 'Password baru harus mengandung huruf.',
+            'password.numbers' => 'Password baru harus mengandung angka.',
             'password.confirmed' => 'Konfirmasi password baru tidak sama.',
             'password.different' => 'Password baru tidak boleh sama dengan password saat ini.',
         ]);

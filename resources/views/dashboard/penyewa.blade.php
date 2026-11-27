@@ -95,7 +95,7 @@
     </div>
 
     <!-- Filter Tab Bar -->
-    <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 border-b border-slate-200/80 text-xs font-bold">
+    <div class="scroll-hint flex items-center gap-2 overflow-x-auto pb-3 mb-6 border-b border-slate-200/80 text-xs font-bold">
         <a href="{{ route('penyewa.dashboard', ['tab' => 'semua']) }}"
            class="px-4 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap {{ $tab == 'semua' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100' }}">
             <span>Semua Transaksi</span>

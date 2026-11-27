@@ -110,3 +110,6 @@ Route::middleware('auth')->group(function () {
         Route::patch('/admin/barang/{barang}/toggle', [DashboardAdminController::class, 'toggleBarangStatus'])->name('admin.barang.toggle');
     });
 });
+
+// Halaman tidak ditemukan: lewat grup web agar sesi/login tetap terbaca di halaman 404.
+Route::fallback(fn () => abort(404));

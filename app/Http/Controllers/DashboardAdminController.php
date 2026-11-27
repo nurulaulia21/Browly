@@ -75,6 +75,13 @@ class DashboardAdminController extends Controller
             return back()->with('error', 'Tidak dapat menghapus akun admin yang sedang aktif.');
         }
 
+        // Akun yang punya transaksi (sebagai penyewa atau pemilik) tidak boleh dihapus:
+        // seluruh riwayat sewa, pembayaran, dan chat terkait akan ikut terhapus.
+        $punyaTransaksi = $user->bookingsAsPenyewa()->exists() || $user->bookingsAsPemilik()->exists();
+        if ($punyaTransaksi) {
+            return back()->with('error', 'Akun "' . $user->name . '" memiliki riwayat transaksi sehingga tidak dapat dihapus.');
+        }
+
         $user->delete();
 
         return back()->with('success', 'Pengguna berhasil dihapus.');

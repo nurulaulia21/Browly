@@ -23,6 +23,8 @@
         </div>
     </div>
 
+    <p class="text-[10px] text-slate-400 -mt-2">Durasi sewa maksimal {{ \App\Services\BookingService::MAX_DURASI_HARI }} hari per booking.</p>
+
     <!-- Live Availability Notice -->
     <div id="availabilityNotice" class="hidden p-3.5 rounded-2xl text-xs flex items-center gap-2 font-medium"></div>
 
@@ -150,3 +152,27 @@
         </button>
     @endif
 </form>
+
+<script>
+// Batasi pilihan tanggal selesai: tidak sebelum tanggal mulai dan maksimal {{ \App\Services\BookingService::MAX_DURASI_HARI }} hari.
+(function () {
+    var mulai = document.getElementById('tanggal_mulai');
+    var selesai = document.getElementById('tanggal_selesai');
+    if (!mulai || !selesai) return;
+    var MAKS = {{ \App\Services\BookingService::MAX_DURASI_HARI }};
+    function fmt(d) { return d.toISOString().slice(0, 10); }
+    function batasi() {
+        if (!mulai.value) return;
+        var awal = new Date(mulai.value + 'T00:00:00Z');
+        var akhir = new Date(awal.getTime() + (MAKS - 1) * 86400000);
+        selesai.min = mulai.value;
+        selesai.max = fmt(akhir);
+        if (selesai.value && selesai.value > selesai.max) {
+            selesai.value = selesai.max;
+            selesai.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+    mulai.addEventListener('change', batasi);
+    batasi();
+})();
+</script>

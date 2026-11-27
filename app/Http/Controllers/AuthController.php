@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
@@ -24,7 +27,18 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        // Batasi percobaan masuk: maksimal 5 kali per menit untuk kombinasi email + alamat IP.
+        $kunciLimit = Str::lower($credentials['email']) . '|' . $request->ip();
+        if (RateLimiter::tooManyAttempts($kunciLimit, 5)) {
+            $detik = RateLimiter::availableIn($kunciLimit);
+
+            return back()->withErrors([
+                'email' => "Terlalu banyak percobaan masuk. Silakan coba lagi dalam {$detik} detik.",
+            ])->onlyInput('email');
+        }
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            RateLimiter::clear($kunciLimit);
             $request->session()->regenerate();
 
             $user = Auth::user();
@@ -36,6 +50,8 @@ class AuthController extends Controller
             // Pengguna memilih dulu mau masuk sebagai Penyewa atau Pemilik
             return redirect()->route('mode.pilih');
         }
+
+        RateLimiter::hit($kunciLimit, 60);
 
         return back()->withErrors([
             'email' => 'Email atau password yang Anda masukkan tidak sesuai.',
@@ -57,7 +73,12 @@ class AuthController extends Controller
             'phone' => ['required', 'string', 'max:20'],
             'lokasi_id' => ['required', 'exists:lokasis,id'],
             'alamat_lengkap' => ['nullable', 'string', 'max:500'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+        ], [
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.letters' => 'Password harus mengandung huruf.',
+            'password.numbers' => 'Password harus mengandung angka.',
+            'password.confirmed' => 'Konfirmasi password tidak sama.',
         ]);
 
         $user = User::create([

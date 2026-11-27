@@ -12,6 +12,9 @@ use InvalidArgumentException;
 
 class BookingService
 {
+    /** Durasi sewa maksimal per booking (hari). */
+    public const MAX_DURASI_HARI = 30;
+
     public function createBooking(Barang $barang, User $penyewa, array $data): Booking
     {
         $startDate = Carbon::parse($data['tanggal_mulai'])->toDateString();

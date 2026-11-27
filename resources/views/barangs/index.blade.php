@@ -43,6 +43,24 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <!-- Filter Sidebar -->
         <div class="lg:col-span-1">
+            @php
+                $jumlahFilterAktif = collect(['q', 'kategori', 'lokasi_id', 'kota', 'pengambilan', 'max_harga'])->filter(fn ($k) => request()->filled($k))->count();
+            @endphp
+
+            {{-- Tombol buka/tutup filter: hanya tampil di layar kecil --}}
+            <button type="button" id="filterToggle" aria-expanded="{{ $jumlahFilterAktif ? 'true' : 'false' }}" aria-controls="filterPanel"
+                    class="filter-toggle w-full items-center justify-between gap-2 px-4 py-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-sm font-extrabold text-slate-900">
+                <span class="flex items-center gap-2">
+                    <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-600"></i>
+                    Filter Pencarian
+                    @if($jumlahFilterAktif)
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold">{{ $jumlahFilterAktif }} aktif</span>
+                    @endif
+                </span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+            </button>
+
+            <div id="filterPanel" class="filter-collapsible {{ $jumlahFilterAktif ? '' : 'is-closed' }}">
             <div class="bg-white/95 backdrop-blur-md p-6 rounded-3xl border border-slate-200/90 shadow-sm sticky top-24">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
                     <span class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
@@ -135,8 +153,10 @@
                         </label>
                         <div class="flex items-center rounded-xl border border-slate-300 overflow-hidden bg-white focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500">
                             <span class="px-3 py-2.5 bg-slate-100 text-xs font-bold text-slate-600 border-r border-slate-200">Rp</span>
-                            <input type="number" name="max_harga" value="{{ request('max_harga') }}" placeholder="150000"
-                                   class="w-full text-xs px-3 py-2 focus:outline-none font-medium bg-transparent">
+                            <input type="text" inputmode="numeric" name="max_harga"
+                                   value="{{ request('max_harga') ? number_format((int) str_replace('.', '', request('max_harga')), 0, ',', '.') : '' }}"
+                                   placeholder="150.000"
+                                   class="format-rupiah w-full text-xs px-3 py-2 focus:outline-none font-medium bg-transparent">
                         </div>
                     </div>
 
@@ -148,6 +168,7 @@
                     </button>
                 </form>
             </div>
+            </div>{{-- /#filterPanel --}}
         </div>
 
         <!-- Product Grid -->
@@ -248,4 +269,47 @@
         </div>
     </div>
 </div>
+
+<script>
+document.querySelectorAll('.format-rupiah').forEach(input => {
+    input.addEventListener('input', function(e) {
+        let cursorPosition = this.selectionStart;
+        let originalLength = this.value.length;
+        let rawDigits = this.value.replace(/\D/g, '');
+        if (!rawDigits) {
+            this.value = '';
+            return;
+        }
+        let formatted = rawDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        this.value = formatted;
+        let newLength = formatted.length;
+        cursorPosition = cursorPosition + (newLength - originalLength);
+        if (cursorPosition < 0) cursorPosition = 0;
+        this.setSelectionRange(cursorPosition, cursorPosition);
+    });
+});
+
+const filterForm = document.querySelector('form');
+if (filterForm) {
+    filterForm.addEventListener('submit', function() {
+        document.querySelectorAll('.format-rupiah').forEach(input => {
+            input.value = input.value.replace(/\./g, '');
+        });
+    });
+}
+</script>
 @endsection
+
+@push('scripts')
+<script>
+    (function () {
+        var tombol = document.getElementById('filterToggle');
+        var panel = document.getElementById('filterPanel');
+        if (!tombol || !panel) return;
+        tombol.addEventListener('click', function () {
+            var tertutup = panel.classList.toggle('is-closed');
+            tombol.setAttribute('aria-expanded', tertutup ? 'false' : 'true');
+        });
+    })();
+</script>
+@endpush

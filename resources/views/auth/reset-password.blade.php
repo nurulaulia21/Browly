@@ -28,8 +28,8 @@
                         <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-600"></i>
                         <span>Password Baru</span>
                     </label>
-                    <input id="password" name="password" type="password" required minlength="6" autocomplete="new-password"
-                           placeholder="Minimal 6 karakter"
+                    <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password"
+                           placeholder="Minimal 8 karakter, huruf dan angka"
                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium bg-white transition">
                 </div>
 
@@ -38,7 +38,7 @@
                         <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-600"></i>
                         <span>Ulangi Password Baru</span>
                     </label>
-                    <input id="password_confirmation" name="password_confirmation" type="password" required minlength="6" autocomplete="new-password"
+                    <input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" autocomplete="new-password"
                            placeholder="Ketik ulang password baru"
                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium bg-white transition">
                 </div>

@@ -59,7 +59,7 @@
     </div>
 
     {{-- Tabs --}}
-    <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-6 border-b border-slate-200 text-xs font-semibold">
+    <div class="scroll-hint flex items-center gap-2 overflow-x-auto pb-2 mb-6 border-b border-slate-200 text-xs font-semibold">
         <a href="{{ route('admin.dashboard', ['tab' => 'transaksi']) }}"
            class="px-4 py-2 rounded-xl transition flex items-center gap-1.5 {{ $tab == 'transaksi' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
             <i data-lucide="receipt" class="w-3.5 h-3.5"></i> Transaksi Booking
@@ -93,7 +93,7 @@
                 <h3 class="font-bold text-slate-900 text-sm">Seluruh Transaksi Booking Platform</h3>
                 <span class="text-xs text-slate-400">Menampilkan seluruh status penyewaan</span>
             </div>
-            <div class="overflow-x-auto">
+            <div class="scroll-hint overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600">
                     <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                         <tr>
@@ -161,7 +161,7 @@
                 <h3 class="font-bold text-slate-900 text-sm">Daftar Barang Disewakan di Platform</h3>
                 <span class="text-xs text-slate-400">Admin dapat menonaktifkan barang jika melanggar ketentuan</span>
             </div>
-            <div class="overflow-x-auto">
+            <div class="scroll-hint overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600">
                     <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                         <tr>
@@ -223,7 +223,7 @@
                 <h3 class="font-bold text-slate-900 text-sm">Daftar Akun Pengguna Terdaftar</h3>
                 <span class="text-xs text-slate-400">Total: {{ $stats['total_users'] }} akun</span>
             </div>
-            <div class="overflow-x-auto">
+            <div class="scroll-hint overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600">
                     <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                         <tr>
@@ -393,7 +393,7 @@
                 <h3 class="font-bold text-slate-900 text-sm">Laporan Denda Keterlambatan & Kerusakan</h3>
                 <span class="text-xs text-rose-600 font-bold">Total Denda: Rp{{ number_format($stats['total_denda'], 0, ',', '.') }}</span>
             </div>
-            <div class="overflow-x-auto">
+            <div class="scroll-hint overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600">
                     <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                         <tr>

@@ -5,27 +5,26 @@
 @endphp
 
 <div class="flex flex-col h-full justify-between">
-    {{-- Header: Logo & Brand --}}
-    <div>
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-            <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                <img src="{{ asset('images/logo.png') }}" alt="Browly" class="browly-nav-logo w-12 h-12 object-contain group-hover:scale-105 transition-transform duration-200 shrink-0">
-                <div class="min-w-0">
-                    <span class="text-xl font-black tracking-tight text-blue-600 group-hover:text-blue-700 transition block">Browly</span>
-                    <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400 block truncate">Platform Sewa Lokal</span>
-                </div>
-            </a>
-
-            <button type="button" onclick="toggleSidebar()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer" title="{{ $isMobile ? 'Tutup Menu' : 'Sembunyikan Sidebar' }}" aria-label="Toggle Sidebar">
-                <i data-lucide="{{ $isMobile ? 'x' : 'panel-left-close' }}" class="w-5 h-5"></i>
-            </button>
-        </div>
-
-        {{-- Navigasi Menu Utama --}}
-        <nav class="p-4 space-y-1 overflow-y-auto">
-            <div class="px-3.5 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                Menu Utama
+    {{-- Header: Logo & Brand (Terkunci di Atas Sidebar) --}}
+    <div class="shrink-0 p-5 border-b border-slate-100 flex items-center justify-between">
+        <a href="{{ route('home') }}" class="flex items-center gap-3 group">
+            <img src="{{ asset('images/logo.png') }}" alt="Browly" class="browly-nav-logo w-12 h-12 object-contain group-hover:scale-105 transition-transform duration-200 shrink-0">
+            <div class="min-w-0">
+                <span class="text-xl font-black tracking-tight text-blue-600 group-hover:text-blue-700 transition block">Browly</span>
+                <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400 block truncate">Platform Sewa Lokal</span>
             </div>
+        </a>
+
+        <button type="button" onclick="toggleSidebar()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer" title="{{ $isMobile ? 'Tutup Menu' : 'Sembunyikan Sidebar' }}" aria-label="Toggle Sidebar">
+            <i data-lucide="{{ $isMobile ? 'x' : 'panel-left-close' }}" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+    {{-- Navigasi Menu Utama (Bisa discroll mandiri jika menu melebihi tinggi layar) --}}
+    <nav class="flex-1 min-h-0 p-4 space-y-1 overflow-y-auto">
+        <div class="px-3.5 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+            Menu Utama
+        </div>
 
             {{-- Beranda --}}
             <a href="{{ route('home') }}"
@@ -94,10 +93,9 @@
                 </div>
             @endauth
         </nav>
-    </div>
 
-    {{-- Footer Sidebar: User Profile & Logout / Login Actions --}}
-    <div class="p-4 border-t border-slate-100 bg-slate-50/70">
+    {{-- Footer Sidebar: User Profile & Logout / Login Actions (Terkunci di Bawah) --}}
+    <div class="shrink-0 p-4 border-t border-slate-100 bg-slate-50/70">
         @auth
             <div class="flex items-center justify-between gap-3">
                 <a href="{{ route('profile.show') }}" class="flex items-center gap-2.5 min-w-0 group" title="Lihat Profil">
